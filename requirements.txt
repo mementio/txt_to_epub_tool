@@ -1,0 +1,6 @@
+EbookLib
+customtkinter
+packaging
+pyinstaller
+lxml
+google-generativeai
