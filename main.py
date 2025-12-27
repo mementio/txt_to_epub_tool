@@ -7,7 +7,6 @@ from ebooklib import epub
 from ai_cleaner import clean_text_with_ai
 from cleaner import clean_structure
 from merger import merge_paragraphs
-txt_to_epub_tool
 # Configuration for custom tkinter
 ctk.set_appearance_mode("System")
 ctk.set_default_color_theme("blue")
