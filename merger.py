@@ -1,6 +1,20 @@
 
 import re
 
+
+def is_heading_candidate(line):
+    clean = line.strip()
+    if not clean:
+        return False
+    if len(clean) > 60:
+        return False
+    terminators = ('.', '!', '?', '"', '”', '’', "'")
+    if clean.endswith(terminators):
+        return False
+    if len(clean.split()) > 12:
+        return False
+    return True
+
 def merge_paragraphs(text):
     """
     Merges lines that are unnecessarily broken, while preserving actual paragraph structure
@@ -29,6 +43,13 @@ def merge_paragraphs(text):
             if current_paragraph_lines:
                 paragraphs.append(" ".join(current_paragraph_lines))
                 current_paragraph_lines = []
+            continue
+        
+        if is_heading_candidate(unique_line):
+            if current_paragraph_lines:
+                paragraphs.append(" ".join(current_paragraph_lines))
+                current_paragraph_lines = []
+            paragraphs.append(unique_line)
             continue
 
         # If we have current content, decide if we should merge or flush

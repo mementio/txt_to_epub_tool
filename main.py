@@ -6,7 +6,7 @@ from tkinter import filedialog, messagebox
 from ebooklib import epub
 from ai_cleaner import clean_text_with_ai
 from cleaner import clean_structure
-from merger import merge_paragraphs
+from merger import merge_paragraphs, is_heading_candidate
 # Configuration for custom tkinter
 ctk.set_appearance_mode("System")
 ctk.set_default_color_theme("blue")
@@ -214,6 +214,8 @@ class TextToEpubApp(ctk.CTk):
             # Heuristic: Short length AND matches pattern
             if len(clean_p) < 100 and header_pattern.match(clean_p):
                 html_content += f"<h2 id='{clean_p[:10].replace(' ', '_')}'>{clean_p}</h2>"
+            elif is_heading_candidate(clean_p):
+                html_content += f"<p><strong>{clean_p}</strong></p>"
             else:
                 html_content += f"<p>{clean_p}</p>"
 
