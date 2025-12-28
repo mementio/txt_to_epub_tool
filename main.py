@@ -47,6 +47,8 @@ class TextToEpubApp(ctk.CTk):
         self.frame_ai = ctk.CTkFrame(self)
         self.frame_ai.grid(row=3, column=0, padx=20, pady=10, sticky="ew")
         self.frame_ai.grid_columnconfigure(1, weight=1)
+
+        self.env_api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
         
         self.use_ai_var = ctk.BooleanVar(value=False)
         self.chk_use_ai = ctk.CTkCheckBox(self.frame_ai, text="Use AI for Cleaning (Experimental)", variable=self.use_ai_var, command=self.toggle_ai_options)
@@ -56,6 +58,10 @@ class TextToEpubApp(ctk.CTk):
         self.entry_api_key = ctk.CTkEntry(self.frame_ai, placeholder_text="AIzaSy...", show="*")
         self.entry_api_key.grid(row=1, column=1, padx=10, pady=10, sticky="ew")
         self.entry_api_key.configure(state="disabled") # Disabled by default
+        if self.env_api_key:
+            self.entry_api_key.configure(state="normal")
+            self.entry_api_key.insert(0, self.env_api_key)
+            self.entry_api_key.configure(state="disabled")
 
         # Convert Button
         self.btn_convert = ctk.CTkButton(self, text="Convert to EPUB", command=self.start_conversion)
@@ -73,6 +79,8 @@ class TextToEpubApp(ctk.CTk):
     def toggle_ai_options(self):
         state = "normal" if self.use_ai_var.get() else "disabled"
         self.entry_api_key.configure(state=state)
+        if state == "normal" and not self.entry_api_key.get() and self.env_api_key:
+            self.entry_api_key.insert(0, self.env_api_key)
 
     def log(self, message):
         self.textbox_log.insert("end", message + "\n")
@@ -92,7 +100,7 @@ class TextToEpubApp(ctk.CTk):
         title = self.entry_title.get()
         author = self.entry_author.get()
         use_ai = self.use_ai_var.get()
-        api_key = self.entry_api_key.get()
+        api_key = self.entry_api_key.get() or self.env_api_key
 
         if not input_path:
             messagebox.showerror("Error", "Please select an input file.")
