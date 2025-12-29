@@ -1,6 +1,11 @@
 import google.generativeai as genai
 import time
 
+# 이건 주석이지롱
+
+
+
+
 def clean_text_with_ai(text, api_key, progress_callback=None):
     """
     Cleans text using Google Gemini API.
