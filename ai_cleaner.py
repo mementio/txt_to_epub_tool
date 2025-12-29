@@ -34,7 +34,7 @@ Instructions:
    - **CRITICAL**: Be extremely careful of headers/footers that appear in the middle of sentences due to page breaks.
    - Example Input: "The quick brown fox jumps over the 10. The Fox and Hound lazy dog."
    - Example Output: "The quick brown fox jumps over the lazy dog."
-   - **User Specific Example**: Remove recurring lines like "1장 왜 우리는 수학을 공부하는가" if they interrupt the text flow.
+ 
 2. **Merge Paragraphs**: Join lines that are hard-wrapped but belong to the same paragraph.
 3. **Preserve Structure**: Keep actual paragraph breaks (blank lines).
 4. **Format Headers**: If you identify a structural chapter START (not a running header), format it as "## Chapter Name".
