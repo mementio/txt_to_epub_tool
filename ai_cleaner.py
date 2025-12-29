@@ -39,7 +39,7 @@ Instructions:
    - **CRITICAL**: Be extremely careful of headers/footers that appear in the middle of sentences due to page breaks.
    - Example Input: "The quick brown fox jumps over the 10. The Fox and Hound lazy dog."
    - Example Output: "The quick brown fox jumps over the lazy dog."
-   - **User Specific Example**: Remove recurring lines like "1장 왜 우리는 수학을 공부하는가" if they interrupt the text flow.
+ 
 2. **Merge Paragraphs**: Join lines that are hard-wrapped but belong to the same paragraph.
 3. **Preserve Structure**: Keep actual paragraph breaks (blank lines).
 4. **Format Headers**: If you identify a structural chapter START (not a running header), format it as "## Chapter Name".
@@ -57,14 +57,7 @@ Instructions:
         if progress_callback:
             progress_callback(0.2)
             
-        # If text is extremely huge, we might want to split. 
-        # But let's assume < 500,000 characters for now for this tool's scope.
-        # If > 500k chars, we might hit output token limits if we ask for full rewrite?
-        # Actually output limit is often 8192 tokens per response block in some APIs, 
-        # so chunking IS required for outputting a whole book.
-        
-        # Chunking Strategy:
-        # Split by double newlines or roughly every 10,000 characters to be safe for output limits.
+      
         chunk_size = 15000 
         chunks = []
         for i in range(0, len(text), chunk_size):
