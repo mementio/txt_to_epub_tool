@@ -52,14 +52,7 @@ Instructions:
         if progress_callback:
             progress_callback(0.2)
             
-        # If text is extremely huge, we might want to split. 
-        # But let's assume < 500,000 characters for now for this tool's scope.
-        # If > 500k chars, we might hit output token limits if we ask for full rewrite?
-        # Actually output limit is often 8192 tokens per response block in some APIs, 
-        # so chunking IS required for outputting a whole book.
-        
-        # Chunking Strategy:
-        # Split by double newlines or roughly every 10,000 characters to be safe for output limits.
+      
         chunk_size = 15000 
         chunks = []
         for i in range(0, len(text), chunk_size):
