@@ -2,14 +2,27 @@
 import re
 
 
+TERMINATORS = ('.', '!', '?', '"', '”', '’', "'", '。', '！', '？')
+
+
+def is_short_heading(line, max_length=20):
+    clean = line.strip()
+    if not clean:
+        return False
+    if len(clean) > max_length:
+        return False
+    if clean.endswith(TERMINATORS):
+        return False
+    return True
+
+
 def is_heading_candidate(line):
     clean = line.strip()
     if not clean:
         return False
     if len(clean) > 60:
         return False
-    terminators = ('.', '!', '?', '"', '”', '’', "'")
-    if clean.endswith(terminators):
+    if clean.endswith(TERMINATORS):
         return False
     if len(clean.split()) > 12:
         return False
@@ -45,7 +58,7 @@ def merge_paragraphs(text):
                 current_paragraph_lines = []
             continue
         
-        if is_heading_candidate(unique_line):
+        if is_short_heading(unique_line):
             if current_paragraph_lines:
                 paragraphs.append(" ".join(current_paragraph_lines))
                 current_paragraph_lines = []
