@@ -1,6 +1,8 @@
 import os
 import re
+import json
 import threading
+from pathlib import Path
 import customtkinter as ctk
 from tkinter import filedialog, messagebox
 from ebooklib import epub
@@ -10,6 +12,36 @@ from ebooklib import epub
 from ai_cleaner import clean_text_with_ai
 from cleaner import clean_structure, remove_tagged_content
 from merger import merge_paragraphs
+
+CONFIG_DIR = Path.home() / ".txt_to_epub_tool"
+CONFIG_PATH = CONFIG_DIR / "config.json"
+
+
+def load_saved_api_key():
+    env_key = os.environ.get("GEMINI_API_KEY", "").strip()
+    if env_key:
+        return env_key
+
+    try:
+        with CONFIG_PATH.open("r", encoding="utf-8") as f:
+            data = json.load(f)
+            return data.get("gemini_api_key", "").strip()
+    except FileNotFoundError:
+        return ""
+    except Exception:
+        return ""
+
+
+def save_api_key(api_key):
+    if not api_key:
+        return
+
+    try:
+        CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+        with CONFIG_PATH.open("w", encoding="utf-8") as f:
+            json.dump({"gemini_api_key": api_key}, f)
+    except Exception:
+        pass
 
 # [설정] 커스텀 Tkinter 테마 설정
 ctk.set_appearance_mode("System")
@@ -65,6 +97,9 @@ class TextToEpubApp(ctk.CTk):
         ctk.CTkLabel(self.frame_ai, text="API Key:").grid(row=1, column=0, padx=10, pady=10)
         self.entry_api_key = ctk.CTkEntry(self.frame_ai, placeholder_text="AIzaSy...", show="*")
         self.entry_api_key.grid(row=1, column=1, padx=10, pady=10, sticky="ew")
+        self._saved_api_key = load_saved_api_key()
+        if self._saved_api_key:
+            self.entry_api_key.insert(0, self._saved_api_key)
         
         # [UI] 4. 변환 버튼
         self.btn_convert = ctk.CTkButton(self, text="EPUB변환 시작", command=self.start_conversion, fg_color="green", hover_color="darkgreen")
@@ -83,6 +118,8 @@ class TextToEpubApp(ctk.CTk):
         self.textbox_log.grid(row=7, column=0, padx=20, pady=(0, 20), sticky="nsew")
         
         self.log("프로그램이 시작되었습니다.")
+        if self._saved_api_key:
+            self.log("저장된 API Key를 불러왔습니다.")
 
     def toggle_ai_options(self):
         """AI 체크박스 상태에 따라 API 키 입력창 활성화/비활성화"""
@@ -120,12 +157,21 @@ class TextToEpubApp(ctk.CTk):
             messagebox.showerror("오류", "변환할 파일을 먼저 선택해주세요.")
             return
         
-        api_key = self.entry_api_key.get()
+        api_key = self.entry_api_key.get().strip()
         use_ai = self.use_ai_var.get()
-        
+
+        if use_ai and not api_key:
+            api_key = load_saved_api_key()
+            if api_key:
+                self.entry_api_key.delete(0, "end")
+                self.entry_api_key.insert(0, api_key)
+                self.log("저장된 API Key를 불러왔습니다.")
+
         if use_ai and not api_key:
             messagebox.showerror("오류", "AI 기능을 사용하려면 API Key가 필요합니다.")
             return
+        elif use_ai:
+            save_api_key(api_key)
 
         author = self.entry_author.get()
         if not author:
